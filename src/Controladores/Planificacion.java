@@ -33,8 +33,8 @@ public class Planificacion {
         LinkedList<PROCESO> p=new LinkedList();
         LinkedList<PROCESO> p2=new LinkedList();
         for (int i= 0; i<num; i++){
-            System.out.println("Por favor ingrese el proceso:" +(i+1)+"Nombre, Duracion, Prioridad, Q");
-            PROCESO este= new PROCESO(scanner.next(), scanner.nextInt(),scanner.nextInt(),scanner.nextInt());
+            System.out.println("Por favor ingrese el proceso:" +(i+1)+"Nombre, Duracion");
+            PROCESO este= new PROCESO(scanner.next(), scanner.nextInt());
             p.add(este);
         }
         p2=p;
