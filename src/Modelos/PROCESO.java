@@ -16,6 +16,9 @@ public class PROCESO {
     private int q;
     private float inicioProceso;
     private float salidaProceso;
+    
+    private int tRetorno = 0;
+    private int tEspera = 0;
 
     public PROCESO() {
     }
@@ -123,6 +126,32 @@ public class PROCESO {
     public void setSalidaProceso(float salidaProceso) {
         this.salidaProceso = salidaProceso;
     }
-    
-    
+
+    /**
+     * @return the tRetorno
+     */
+    public int gettRetorno() {
+        return tRetorno;
+    }
+
+    /**
+     * @param tRetorno the tRetorno to set
+     */
+    public void settRetorno(int tRetorno) {
+        this.tRetorno = tRetorno;
+    }
+
+    /**
+     * @return the tEspera
+     */
+    public int gettEspera() {
+        return tEspera;
+    }
+
+    /**
+     * @param tEspera the tEspera to set
+     */
+    public void settEspera(int tEspera) {
+        this.tEspera = tEspera;
+    }
 }

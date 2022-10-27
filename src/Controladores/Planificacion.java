@@ -195,7 +195,6 @@ public class Planificacion {
             tRetorno = tSalida;
             tEspera = tInicio - tLlegada;
             tEsperas[i] = tSalida;
-            sacarEsperas(tEsperas, duras);
             System.out.println("Tiempo de ejecucion: " + tiempo);
             i++;
             if (p.isEmpty()) {

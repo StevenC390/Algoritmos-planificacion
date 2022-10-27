@@ -5,13 +5,7 @@
  */
 package Vistas;
 
-import static Controladores.Planificacion.agregarProcesos;
-import static Controladores.Planificacion.agregarProcesosConPioridad;
-import static Controladores.Planificacion.calcularPromedio;
-import static Controladores.Planificacion.ordenarDuracion;
-import static Controladores.Planificacion.ordenarPrioridad;
-import static Controladores.Planificacion.procesar;
-import static Controladores.Planificacion.procesarRobin;
+
 import Modelos.PROCESO;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,17 +18,22 @@ import javax.swing.table.DefaultTableModel;
  * @author Steven
  */
 public class Algoritmos extends javax.swing.JFrame {
+
     
-    ArrayList<PROCESO> misProcesos=new ArrayList<>();
+
+    int q = 0;
+    LinkedList<PROCESO> misProcesos = new LinkedList<>();
 
     /**
      * Creates new form Algoritmos
      */
     public Algoritmos() {
         initComponents();
-        
         actualizarTabla();
     }
+    
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,28 +45,41 @@ public class Algoritmos extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btnIngresar = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        txNproceso = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbProcesos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        txNproceso = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txDuracion = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txPrioridad = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        txPrioridad = new javax.swing.JTextField();
         txQ = new javax.swing.JTextField();
-        btnIniciar = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tbProcesos = new javax.swing.JTable();
+        btnIngresar = new javax.swing.JButton();
+        btnFCFS = new javax.swing.JButton();
+        btnQ = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tbresultados = new javax.swing.JTable();
+        btnSJF = new javax.swing.JButton();
+        btnRoundRobin = new javax.swing.JButton();
+        btnPrioridad = new javax.swing.JButton();
+        lbltpRetorno = new javax.swing.JLabel();
+        lbltpEspera = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        btnIngresar.setText("Ingresar Proceso");
-        btnIngresar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnIngresarActionPerformed(evt);
+        tbProcesos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Nombre", "Duracion", "Prioridad"
             }
-        });
+        ));
+        jScrollPane1.setViewportView(tbProcesos);
 
         jLabel1.setText("Nombre Proceso");
 
@@ -83,106 +95,171 @@ public class Algoritmos extends javax.swing.JFrame {
 
         jLabel4.setText("Q");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(txDuracion, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
-                    .addComponent(jLabel3)
-                    .addComponent(txPrioridad)
-                    .addComponent(txNproceso)
-                    .addComponent(jLabel4)
-                    .addComponent(txQ))
-                .addContainerGap(57, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txNproceso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txPrioridad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txQ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(124, Short.MAX_VALUE))
-        );
-
-        btnIniciar.setText("Iniciar Programa");
-        btnIniciar.addActionListener(new java.awt.event.ActionListener() {
+        btnIngresar.setText("Agregar Proceso");
+        btnIngresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnIniciarActionPerformed(evt);
+                btnIngresarActionPerformed(evt);
             }
         });
 
-        tbProcesos.setModel(new javax.swing.table.DefaultTableModel(
+        btnFCFS.setText("FCFS");
+        btnFCFS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFCFSActionPerformed(evt);
+            }
+        });
+
+        btnQ.setText("Ingresar Q");
+        btnQ.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQActionPerformed(evt);
+            }
+        });
+
+        tbresultados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Proceso", "Tiempo Retorno", "Tiempo Espera"
             }
         ));
-        jScrollPane1.setViewportView(tbProcesos);
+        jScrollPane2.setViewportView(tbresultados);
+
+        btnSJF.setText("SJF");
+        btnSJF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSJFActionPerformed(evt);
+            }
+        });
+
+        btnRoundRobin.setText("RoundRobin");
+        btnRoundRobin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRoundRobinActionPerformed(evt);
+            }
+        });
+
+        btnPrioridad.setText("Prioridad");
+        btnPrioridad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrioridadActionPerformed(evt);
+            }
+        });
+
+        lbltpRetorno.setText("Tiempo Promedio Retorno:");
+
+        lbltpEspera.setText("Tiempo Promedio Espera:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(76, 76, 76)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnIngresar)
-                    .addComponent(btnIniciar))
-                .addGap(29, 29, 29)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(127, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txDuracion)
+                                    .addComponent(txPrioridad)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(txNproceso, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(btnRoundRobin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnPrioridad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnSJF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnFCFS, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txQ, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnIngresar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnQ, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addGap(36, 36, 36)))
+                .addGap(17, 17, 17)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(38, 38, 38)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lbltpRetorno)
+                            .addComponent(lbltpEspera))))
+                .addGap(397, 397, 397))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txNproceso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txPrioridad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnIngresar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnIniciar))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(574, 574, 574))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txQ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnQ)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnFCFS)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSJF)
+                        .addGap(7, 7, 7)
+                        .addComponent(btnPrioridad)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRoundRobin))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lbltpRetorno)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbltpEspera))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 689, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -198,9 +275,9 @@ public class Algoritmos extends javax.swing.JFrame {
         try {
             String nombre = this.txNproceso.getText();
             int duracion = Integer.parseInt(this.txDuracion.getText());
-            PROCESO nuevo = new PROCESO(nombre, duracion);
+            int prioridad = Integer.parseInt(this.txPrioridad.getText());
+            PROCESO nuevo = new PROCESO(nombre, duracion, prioridad);
             misProcesos.add(nuevo);
-            JOptionPane.showMessageDialog(null, "Proceso Agregado Creado Exitosamente");
             limpiarCampos();
             actualizarTabla();
         } catch (Exception e) {
@@ -208,24 +285,40 @@ public class Algoritmos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnIngresarActionPerformed
 
-    private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
+    private void btnFCFSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFCFSActionPerformed
         // TODO add your handling code here:
-        
-    }//GEN-LAST:event_btnIniciarActionPerformed
-    
+        FCFS(misProcesos, 0, 0);
+    }//GEN-LAST:event_btnFCFSActionPerformed
+
+    private void btnQActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQActionPerformed
+        // TODO add your handling code here:
+        this.q = Integer.parseInt(this.txQ.getText());
+        limpiarCampos();
+    }//GEN-LAST:event_btnQActionPerformed
+
+    private void btnSJFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSJFActionPerformed
+        // TODO add your handling code here:
+        SJF(misProcesos, 0, 0);
+    }//GEN-LAST:event_btnSJFActionPerformed
+
+    private void btnRoundRobinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRoundRobinActionPerformed
+        // TODO add your handling code here:
+        RoundRobin(misProcesos, 0, 0);
+    }//GEN-LAST:event_btnRoundRobinActionPerformed
+
+    private void btnPrioridadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrioridadActionPerformed
+        // TODO add your handling code here:
+        Prioridad(misProcesos, 0, 0);
+    }//GEN-LAST:event_btnPrioridadActionPerformed
+
     public void FCFS(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
         System.out.println("Algoritmo FCFS");
         procesar(p, tRetorno, tEspera);
+        actualizarTabla1();
     }
-
+    
     public void SJF(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
         System.out.println("Algoritmo SJF");
-        System.out.println("Desea agregar un nuevo proceso? Ingrese Y si es afirmativo, N si es negativo");
-        Scanner scanner = new Scanner(System.in);
-        String letra = scanner.next();
-        if (letra.equals("Y") || letra.equals("y")) {
-            agregarProcesos(0, p);
-        }
         LinkedList<PROCESO> p2 = new LinkedList();
         p2.addAll(p);
         ordenarDuracion(p2);
@@ -235,18 +328,6 @@ public class Algoritmos extends javax.swing.JFrame {
 
     public void Prioridad(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
         System.out.println("Algoritmo por Prioridades");
-        System.out.println("Desea agregar un nuevo proceso? Ingrese Y si es afirmativo, N si es negativo");
-        Scanner scanner = new Scanner(System.in);
-        String letra = scanner.next();
-        if (letra.equals("Y") || letra.equals("y")) {
-            agregarProcesosConPioridad(0, p);
-        } else {
-            System.out.println("Pls Ingrese la prioridad para los procesos existentes: ");
-            for (PROCESO este : p) {
-                System.out.println(este.getNombre() + " Prioridad: ");
-                este.setPrioridad(scanner.nextInt());
-            }
-        }
         LinkedList<PROCESO> p2 = new LinkedList();
         p2.addAll(p);
         ordenarPrioridad(p2);
@@ -256,14 +337,10 @@ public class Algoritmos extends javax.swing.JFrame {
 
     public void RoundRobin(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
         System.out.println("Algoritmo Round Robin");
-        System.out.println("Pls Ingrese el valor de Q");
-        Scanner scanner = new Scanner(System.in);
-        int q=scanner.nextInt();
-        procesarRobin(p, tRetorno, tEspera, q);
-
+        procesarRobin(p, tRetorno, tEspera);
     }
-    
-    public static void procesar(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
+
+    public void procesar(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
         boolean bandera = false;
         int tiempo = 0;
         int i = 0;
@@ -289,32 +366,148 @@ public class Algoritmos extends javax.swing.JFrame {
             tSalida = tiempo;
             tRetornos[i] = tSalida;
             //Se calculan los tiempos de Retorno y Espera
-            tRetorno = este.getDuracion() + tInicio;
-            System.out.println("Tiempo Retorno " + este.getNombre() + ": " + tRetorno);            
-            tEspera = tInicio - tLlegada;
-            tEsperas[i] = tEspera;
-            System.out.println("Tiempo Espera " + este.getNombre() + ": " + tEspera);
+            este.settRetorno(este.getDuracion() + tInicio);
+            //System.out.println("Tiempo Retorno " + este.getNombre() + ": " + este.gettRetorno());            
+            este.settEspera(tInicio - tLlegada);
+            tEsperas[i] = este.gettEspera();
+            //System.out.println("Tiempo Espera " + este.getNombre() + ": " + este.gettEspera());
             System.out.println("Tiempo de ejecucion: " + tiempo);
             i++;
             if (i == p.size()) {
                 bandera = true;
             }
         }
-        System.out.println("Tiempo Retorno Promedio: " + calcularPromedio(tRetornos, tRetornos.length));
-        System.out.println("Tiempo Espera Promedio: " + calcularPromedio(tEsperas, tEsperas.length));
+        this.lbltpRetorno.setText("Tiempo Retorno Promedio: "+calcularPromedio(tRetornos, tRetornos.length));
+        this.lbltpEspera.setText("Tiempo Espera Promedio: "+calcularPromedio(tEsperas, tEsperas.length));
+        //System.out.println("Tiempo Retorno Promedio: " + calcularPromedio(tRetornos, tRetornos.length));
+        //System.out.println("Tiempo Espera Promedio: " + calcularPromedio(tEsperas, tEsperas.length));
     }
     
-    private void limpiarCampos(){
+    public void procesarRobin(LinkedList<PROCESO> p, int tRetorno, int tEspera) {
+        LinkedList<PROCESO> p2 = new LinkedList();
+        p2.addAll(p);
+        boolean bandera = false;
+        int tiempo = 0;
+        int i = 0;
+        int[] tRetornos = new int[p2.size()];
+        int[] tEsperas = new int[p2.size()];
+        int[] duras= new int[p2.size()];
+        while (bandera == false) {
+            //Info del proceso cuando llega, sale e inicia
+            int tLlegada = i;
+            int tInicio = 0;
+            int tSalida = 0;
+            //Saca el proceso actual para trabajar con su duracion
+            PROCESO este = p2.get(i);
+            if(duras[i]==0){
+                duras[i]=este.getDuracion();
+            }
+            //Se anota el tiempo en que llego el nuevo proceso
+            tInicio = tiempo;
+            //Se "Ejecuta" el proceso
+            int compro=0;
+            while (este.getDuracion() != 0 && compro!=this.q) {
+                este.setDuracion(este.getDuracion() - 1);
+                tiempo++;
+                compro++;
+                if(este.getDuracion()==0){
+                    p2.remove(este);
+                }
+            }
+            compro=0;
+            tSalida = tiempo;
+            tRetornos[i] = tSalida;
+            //Se calculan los tiempos de Retorno y Espera
+            este.settRetorno(tSalida);
+            este.settEspera(tInicio - tLlegada);
+            tEsperas[i] = tSalida;
+            System.out.println("Tiempo de ejecucion: " + tiempo);
+            i++;
+            if (p2.isEmpty()) {
+                bandera = true;
+            }else if(i>p2.size()-1){
+                i=0;
+            }
+        }
+        sacarEsperas(tEsperas, duras,p);
+        resetDuras(duras, p);
+        actualizarTabla1();
+        this.lbltpRetorno.setText("Tiempo Retorno Promedio: "+calcularPromedio(tRetornos, tRetornos.length));
+        this.lbltpEspera.setText("Tiempo Espera Promedio: "+calcularPromedio(tEsperas, tEsperas.length));
+        p2=null;
+    }
+    
+    public void resetDuras(int[] duras,LinkedList<PROCESO> p2){
+        for (int i = 0; i < duras.length; i++) {
+            p2.get(i).setDuracion(duras[i]);
+        }
+    }
+    public void sacarEsperas(int[] esperas, int[] duras,LinkedList<PROCESO> p2){
+        for (int i = 0; i < duras.length; i++) {
+            p2.get(i).settEspera(esperas[i]-duras[i]);
+        }
+    }
+    public boolean comprobar(boolean[] lista){
+        boolean res=true;
+        for (int i = 0; i < lista.length; i++) {
+            if(lista[i]== false){
+                res=false;
+            }
+        }
+        return res;
+    }
+
+    public float calcularPromedio(int[] lista, int n) {
+        int suma = 0;
+        float res = 0;
+        for (int i = 0; i < n; i++) {
+            suma += lista[i];
+        }
+        res = suma / n;
+        return res;
+    }
+
+    public void ordenarPrioridad(LinkedList<PROCESO> p) {
+        PROCESO este = null;
+        PROCESO esteOtro = null;
+        for (int i = 1; i < p.size(); i++) {
+            este = p.get(i);
+            int j = i - 1;
+            while (j >= 0 && este.getPrioridad() <= p.get(j).getPrioridad()) {
+                esteOtro = p.get(j);
+                p.set(j + 1, p.get(j));
+                j--;
+            }
+            p.set(j + 1, este);
+        }
+    }
+
+    public void ordenarDuracion(LinkedList<PROCESO> p) {
+        PROCESO este = null;
+        PROCESO esteOtro = null;
+        for (int i = 1; i < p.size(); i++) {
+            este = p.get(i);
+            int j = i - 1;
+            while (j >= 0 && este.getDuracion() <= p.get(j).getDuracion()) {
+                esteOtro = p.get(j);
+                p.set(j + 1, p.get(j));
+                j--;
+            }
+            p.set(j + 1, este);
+        }
+    }
+
+    private void limpiarCampos() {
         this.txNproceso.setText("");
         this.txDuracion.setText("");
         this.txPrioridad.setText("");
         this.txQ.setText("");
     }
-    public void actualizarTabla(){
+
+    public void actualizarTabla() {
         String nombresColumnas[] = {"Nombre", "Duracion", "Prioridad"};
         DefaultTableModel miModelo = new DefaultTableModel(null, nombresColumnas);
         this.tbProcesos.setModel(miModelo);
-        //this.miLiga.listarEquiposPuntos();
         for (int i = 0; i < this.misProcesos.size(); i++) {
             String fila[] = new String[nombresColumnas.length];
             fila[0] = this.misProcesos.get(i).getNombre();
@@ -323,6 +516,20 @@ public class Algoritmos extends javax.swing.JFrame {
             miModelo.addRow(fila);
         }
     }
+    
+    public void actualizarTabla1() {
+        String nombresColumnas[] = {"Proceso","Tiempo Retorno", "Tiempo Espera"};
+        DefaultTableModel miModelo = new DefaultTableModel(null, nombresColumnas);
+        this.tbresultados.setModel(miModelo);
+        for (int i = 0; i < this.misProcesos.size(); i++) {
+            String fila[] = new String[nombresColumnas.length];
+            fila[0] = this.misProcesos.get(i).getNombre();
+            fila[1] = "" + this.misProcesos.get(i).gettRetorno();
+            fila[2] = "" + this.misProcesos.get(i).gettEspera();;
+            miModelo.addRow(fila);
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -360,16 +567,23 @@ public class Algoritmos extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFCFS;
     private javax.swing.JButton btnIngresar;
-    private javax.swing.JButton btnIniciar;
+    private javax.swing.JButton btnPrioridad;
+    private javax.swing.JButton btnQ;
+    private javax.swing.JButton btnRoundRobin;
+    private javax.swing.JButton btnSJF;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lbltpEspera;
+    private javax.swing.JLabel lbltpRetorno;
     private javax.swing.JTable tbProcesos;
+    private javax.swing.JTable tbresultados;
     private javax.swing.JTextField txDuracion;
     private javax.swing.JTextField txNproceso;
     private javax.swing.JTextField txPrioridad;
